@@ -19,6 +19,8 @@ class CreateUsersTable extends Migration
             $table->string('password', 255); // hashed password.
             $table->timestamps();
         });
+
+
     }
 
     /**
