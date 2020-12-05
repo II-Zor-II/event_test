@@ -11,13 +11,10 @@ use Illuminate\Support\Facades\Route;
 class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * The path to the "home" route for your application.
-     *
-     * This is used by Laravel authentication to redirect users after login.
-     *
-     * @var string
+     * Routes used by middleware are managed here
      */
-    public const HOME = '/home';
+    public const DASHBOARD = '/dashboard';
+    public const LOGIN = '/login';
 
     /**
      * The controller namespace for the application.
