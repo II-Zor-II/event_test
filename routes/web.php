@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\IndexController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Add routes that are accessible without authentication here
+Route::middleware(['guest'])->group(function(){
+    // redirect root to login
+    Route::redirect('/', '/login');
+
+    Route::get('/login', [IndexController::class, 'showLogin'])->name('login');
+    Route::post('/login', [IndexController::class, 'doLogin']);
 });
+
+// Add routes that need authentication here
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [IndexController::class, 'showDashboard'])->name('dashboard');
+});
+

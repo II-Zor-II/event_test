@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserFactory extends Factory
@@ -22,9 +23,10 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $username = $this->faker->firstName;
         return [
-            'username' => $this->faker->name,
-            'password' => $this->faker->regexify('[ A-Za-z0-9_@./#&+-]{20}') //@todo modify for hashing
+            'username' => $username,
+            'password' => Hash::make($username)
         ];
     }
 }
