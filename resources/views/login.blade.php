@@ -8,7 +8,9 @@
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="/css/app.css">
+
     <!-- Styles -->
     <style>
         /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
@@ -394,6 +396,7 @@
     </style>
 </head>
 <body class="antialiased">
+
 <div class="container-fluid d-flex justify-content-center">
     <div class="mt-4 border border-primary rounded p-2">
         <div class="dark:bg-gray-800 dark:text-white text-center">
