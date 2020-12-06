@@ -3,11 +3,8 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
 require('./bootstrap');
-
 window.Vue = require('vue');
-
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -16,18 +13,46 @@ window.Vue = require('vue');
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+const files = require.context('./', true, /\.vue$/i)
+files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('navbar-component', require('./components/NavBarComponent.vue').default);
-Vue.component('calendar-component', require('./components/CalendarComponent').default);
-Vue.component('manual-event-component', require('./components/ManualEventComponent').default);
+
+/**
+ * Vue instance that will serve as centralized event dispatcher for our dashboard
+ */
+const dashboardEventHub = new Vue();
+Vue.prototype.$dashboardEventHub = dashboardEventHub; // attach dashboardEventHub instance to our vue global instance
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
 const app = new Vue({
     el: '#app',
+    data: {
+        calendarEvents: []
+    },
+    created() {
+
+    },
+    mounted() {
+        this.getCalendarEvents();
+    },
+    methods: {
+        getCalendarEvents() {
+            axios.get('/api/events', {
+                params: {
+                    'api_token' : USER.api_token
+                }
+            }).then((response) => {
+                if (response['data'] !== '' && response['data'] !== null) {
+                    this.calendarEvents = response['data'];
+                    console.log(response['data']);
+                } else {
+                    console.log(response);
+                }
+            })
+        }
+    }
 });
