@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\User;
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -17,7 +18,7 @@ class ApiAuthenticate
 {
     private const API_TOKEN_KEY = 'api_token';
 
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
         if (!$request->expectsJson()) { // redirect request that doesn't have "Accept" : "application/json" to web ui.
             return route('login');

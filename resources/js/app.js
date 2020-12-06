@@ -34,7 +34,7 @@ const app = new Vue({
         calendarEvents: []
     },
     created() {
-
+        dashboardEventHub.$on('refreshCalendar', this.getCalendarEvents);
     },
     mounted() {
         this.getCalendarEvents();
@@ -47,7 +47,7 @@ const app = new Vue({
                 }
             }).then((response) => {
                 if (response['data'] !== '' && response['data'] !== null) {
-                    this.calendarEvents = response['data'];
+                    this.calendarEvents = [response['data']];
                     console.log(response['data']);
                 } else {
                     console.log(response);

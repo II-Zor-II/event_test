@@ -14502,18 +14502,49 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Manual Event Component.');
   },
   data: function data() {
     return {
-      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+      checkedDays: [],
+      eventName: 'Event Test',
+      startDate: '2020-12-04',
+      endDate: '2020-12-30',
+      weekdays: {
+        'monday': '1',
+        'tuesday': '2',
+        'wednesday': '3',
+        'thursday': '4',
+        'friday': '5',
+        'saturday': '6',
+        'sunday': '0'
+      }
     };
   },
   methods: {
     saveEvent: function saveEvent() {
+      var _this = this;
+
+      var _self = this;
+
+      console.log([_self.checkedDays, _self.eventName, _self.startDate, _self.endDate]);
       console.log('saving...');
+      axios.post('/api/events', {
+        'api_token': USER.api_token,
+        'events': JSON.stringify({
+          'title': _self.eventName,
+          'daysOfWeek': _self.checkedDays,
+          'startRecur': _self.startDate,
+          'endRecur': _self.endDate
+        })
+      }).then(function (response) {
+        console.log(response);
+
+        _this.$dashboardEventHub.$emit('refreshCalendar');
+      });
     }
   }
 });
@@ -50833,12 +50864,28 @@ var render = function() {
       _c("br"),
       _vm._v(" "),
       _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.eventName,
+            expression: "eventName"
+          }
+        ],
         attrs: {
           name: "event",
           type: "text",
           id: "calender_event",
-          value: "Test Event",
           placeholder: ""
+        },
+        domProps: { value: _vm.eventName },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.eventName = $event.target.value
+          }
         }
       }),
       _vm._v(" "),
@@ -50847,28 +50894,52 @@ var render = function() {
       _c("label", { attrs: { for: "start_date" } }, [_vm._v("From")]),
       _vm._v(" "),
       _c("input", {
-        attrs: {
-          type: "date",
-          id: "start_date",
-          name: "start_date",
-          value: "2020-12-04"
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.startDate,
+            expression: "startDate"
+          }
+        ],
+        attrs: { type: "date", id: "start_date", name: "start_date" },
+        domProps: { value: _vm.startDate },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.startDate = $event.target.value
+          }
         }
       }),
       _vm._v(" "),
       _c("label", { attrs: { for: "end_date" } }, [_vm._v("To")]),
       _vm._v(" "),
       _c("input", {
-        attrs: {
-          type: "date",
-          id: "end_date",
-          name: "end_date",
-          value: "2020-12-30"
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.endDate,
+            expression: "endDate"
+          }
+        ],
+        attrs: { type: "date", id: "end_date", name: "end_date" },
+        domProps: { value: _vm.endDate },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.endDate = $event.target.value
+          }
         }
       }),
       _vm._v(" "),
       _c("br"),
       _vm._v(" "),
-      _vm._l(_vm.weekdays, function(day) {
+      _vm._l(_vm.weekdays, function(calendarValue, day) {
         return _c("ul", { attrs: { id: "weekdays" } }, [
           _c("li", [
             _c("label", { attrs: { for: day + "_checkbox" } }, [
@@ -50877,13 +50948,47 @@ var render = function() {
             _c("br"),
             _vm._v(" "),
             _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.checkedDays,
+                  expression: "checkedDays"
+                }
+              ],
               attrs: {
                 type: "checkbox",
                 id: day + "_checkbox",
                 name: day,
                 checked: "true"
               },
-              domProps: { value: day }
+              domProps: {
+                value: calendarValue,
+                checked: Array.isArray(_vm.checkedDays)
+                  ? _vm._i(_vm.checkedDays, calendarValue) > -1
+                  : _vm.checkedDays
+              },
+              on: {
+                change: function($event) {
+                  var $$a = _vm.checkedDays,
+                    $$el = $event.target,
+                    $$c = $$el.checked ? true : false
+                  if (Array.isArray($$a)) {
+                    var $$v = calendarValue,
+                      $$i = _vm._i($$a, $$v)
+                    if ($$el.checked) {
+                      $$i < 0 && (_vm.checkedDays = $$a.concat([$$v]))
+                    } else {
+                      $$i > -1 &&
+                        (_vm.checkedDays = $$a
+                          .slice(0, $$i)
+                          .concat($$a.slice($$i + 1)))
+                    }
+                  } else {
+                    _vm.checkedDays = $$c
+                  }
+                }
+              }
             })
           ])
         ])
@@ -63196,7 +63301,9 @@ var app = new Vue({
   data: {
     calendarEvents: []
   },
-  created: function created() {},
+  created: function created() {
+    dashboardEventHub.$on('refreshCalendar', this.getCalendarEvents);
+  },
   mounted: function mounted() {
     this.getCalendarEvents();
   },
@@ -63210,7 +63317,7 @@ var app = new Vue({
         }
       }).then(function (response) {
         if (response['data'] !== '' && response['data'] !== null) {
-          _this.calendarEvents = response['data'];
+          _this.calendarEvents = [response['data']];
           console.log(response['data']);
         } else {
           console.log(response);

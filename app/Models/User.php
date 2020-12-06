@@ -29,4 +29,9 @@ class User extends Authenticatable
         'password'
     ];
 
+    public function scheduledEvents()
+    {
+        return $this->hasOne(Event::class, 'user_id', 'id');
+    }
+
 }
