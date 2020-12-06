@@ -1,17 +1,28 @@
 <template>
     <div>
-        <label for="event"><h2>Events</h2></label><br>
-        <input name="event" type="text" id="calender_event" v-model="eventName" placeholder="">
+        <div class="alert-dark alert p-2">
+            <label for="event"><h2 class="display-4">Events</h2></label>
+        </div>
+        <div>
+            <input class="form-control" name="event" type="text" id="calender_event" v-model="eventName"
+                   placeholder="Enter Event Name here...">
+        </div>
         <br>
-        <label for="start_date">From</label>
-        <input type="date" id="start_date" name="start_date" v-model="startDate">
-        <label for="end_date">To</label>
-        <input type="date" id="end_date" name="end_date" v-model="endDate">
-        <br>
-        <ul id="weekdays" v-for="(calendarValue, day) in weekdays">
-            <li>
+        <div class="input-group row">
+            <div class="col col-md-6">
+                <label for="start_date">From</label>
+                <input class="form-control" type="date" id="start_date" name="start_date" v-model="startDate">
+            </div>
+            <div class="col col-md-6">
+                <label for="end_date">To</label>
+                <input class="form-control" type="date" id="end_date" name="end_date" v-model="endDate">
+            </div>
+        </div>
+        <ul id="weekdays">
+            <li v-for="(calendarValue, day) in weekdays" class="p-1">
                 <label :for="`${day}_checkbox`">{{day}}</label><br>
-                <input type="checkbox" :id="`${day}_checkbox`" :name="day" checked="true" :value="calendarValue"
+                <input class="form-control" type="checkbox" :id="`${day}_checkbox`" :name="day" checked="true"
+                       :value="calendarValue"
                        v-model="checkedDays">
             </li>
         </ul>
@@ -28,9 +39,9 @@
         data() {
             return {
                 checkedDays: [],
-                eventName: 'Event Test',
-                startDate: '2020-12-04',
-                endDate: '2020-12-30',
+                eventName: '',
+                startDate: '',
+                endDate: '',
                 weekdays: {
                     'monday': '1',
                     'tuesday': '2',
@@ -45,15 +56,6 @@
         methods: {
             saveEvent: function () {
                 let _self = this;
-                console.log(
-                    [
-                        _self.checkedDays,
-                        _self.eventName,
-                        _self.startDate,
-                        _self.endDate
-                    ]
-                );
-                console.log('saving...');
                 axios.post('/api/events', {
                     'api_token': USER.api_token,
                     'events': JSON.stringify({
@@ -64,9 +66,16 @@
                     })
                 }).then((response) => {
                     console.log(response);
+                    alert('Event Saved. Refreshing Calendar..');
                     this.$dashboardEventHub.$emit('refreshCalendar');
                 })
             }
         }
     }
 </script>
+<style>
+    ul {
+        display: flex;
+        list-style: none;
+    }
+</style>
