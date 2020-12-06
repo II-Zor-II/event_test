@@ -3,6 +3,7 @@
     import dayGridPlugin from '@fullcalendar/daygrid'
 
     export default {
+        props : ["events"],
         components: {
             FullCalendar // make the <FullCalendar> tag available
         },
@@ -11,28 +12,24 @@
                 calendarOptions: {
                     plugins: [dayGridPlugin],
                     initialView: 'dayGridMonth',
-                    initialEvents: [
-                        {
-                            id: 1,
-                            title: 'All-day event',
-                            start: this.getDateToday()
-                        },
-                        {
-                            id: 2,
-                            title: 'Timed event',
-                            start: this.getDateToday() + 'T12:00:00'
-                        }
-                    ],
+                    events: this.events
                 }
             }
         },
         methods: {
-            getDateToday() {
-                return new Date().toISOString().replace(/T.*$/, '')
+
+        },
+        watch: {
+            events : {
+                deep: true,
+                handler() {
+                    this.calendarOptions.events = this.events;
+                    this.$refs.calendar.$emit('refetch-events')
+                }
             }
         }
     }
 </script>
 <template>
-    <FullCalendar defaultView="dayGridMonth" :options="calendarOptions"/>
+    <FullCalendar defaultView="dayGridMonth" ref="calendar" :options="calendarOptions" :event-sources="calendarOptions.events"/>
 </template>

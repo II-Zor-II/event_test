@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\IndexController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::middleware(['auth_api'])->group(function () {
+    Route::get('/user', [ApiController::class, 'getUser']);
+    Route::get('/events', [ApiController::class, 'getEvents']);
+    Route::post('/events', [ApiController::class, 'storeEvent']);
 });

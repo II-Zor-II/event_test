@@ -405,7 +405,6 @@
     @if(session('error')!==null)
         <h1>{{session('error')}}</h1>
     @endif
-
 </form>
 </body>
 </html>
