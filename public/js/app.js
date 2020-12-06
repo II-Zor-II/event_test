@@ -14444,6 +14444,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["events"],
   components: {
     FullCalendar: _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_0__["default"] // make the <FullCalendar> tag available
 
@@ -14453,21 +14454,18 @@ __webpack_require__.r(__webpack_exports__);
       calendarOptions: {
         plugins: [_fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_1__["default"]],
         initialView: 'dayGridMonth',
-        initialEvents: [{
-          id: 1,
-          title: 'All-day event',
-          start: this.getDateToday()
-        }, {
-          id: 2,
-          title: 'Timed event',
-          start: this.getDateToday() + 'T12:00:00'
-        }]
+        events: this.events
       }
     };
   },
-  methods: {
-    getDateToday: function getDateToday() {
-      return new Date().toISOString().replace(/T.*$/, '');
+  methods: {},
+  watch: {
+    events: {
+      deep: true,
+      handler: function handler() {
+        this.calendarOptions.events = this.events;
+        this.$refs.calendar.$emit('refetch-events');
+      }
     }
   }
 });
@@ -14504,14 +14502,50 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Manual Event Component.');
   },
   data: function data() {
     return {
-      weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+      checkedDays: [],
+      eventName: 'Event Test',
+      startDate: '2020-12-04',
+      endDate: '2020-12-30',
+      weekdays: {
+        'monday': '1',
+        'tuesday': '2',
+        'wednesday': '3',
+        'thursday': '4',
+        'friday': '5',
+        'saturday': '6',
+        'sunday': '0'
+      }
     };
+  },
+  methods: {
+    saveEvent: function saveEvent() {
+      var _this = this;
+
+      var _self = this;
+
+      console.log([_self.checkedDays, _self.eventName, _self.startDate, _self.endDate]);
+      console.log('saving...');
+      axios.post('/api/events', {
+        'api_token': USER.api_token,
+        'events': JSON.stringify({
+          'title': _self.eventName,
+          'daysOfWeek': _self.checkedDays,
+          'startRecur': _self.startDate,
+          'endRecur': _self.endDate
+        })
+      }).then(function (response) {
+        console.log(response);
+
+        _this.$dashboardEventHub.$emit('refreshCalendar');
+      });
+    }
   }
 });
 
@@ -50793,7 +50827,12 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("FullCalendar", {
-    attrs: { defaultView: "dayGridMonth", options: _vm.calendarOptions }
+    ref: "calendar",
+    attrs: {
+      defaultView: "dayGridMonth",
+      options: _vm.calendarOptions,
+      "event-sources": _vm.calendarOptions.events
+    }
   })
 }
 var staticRenderFns = []
@@ -50825,12 +50864,28 @@ var render = function() {
       _c("br"),
       _vm._v(" "),
       _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.eventName,
+            expression: "eventName"
+          }
+        ],
         attrs: {
           name: "event",
           type: "text",
           id: "calender_event",
-          value: "",
           placeholder: ""
+        },
+        domProps: { value: _vm.eventName },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.eventName = $event.target.value
+          }
         }
       }),
       _vm._v(" "),
@@ -50839,18 +50894,52 @@ var render = function() {
       _c("label", { attrs: { for: "start_date" } }, [_vm._v("From")]),
       _vm._v(" "),
       _c("input", {
-        attrs: { type: "date", id: "start_date", name: "start_date" }
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.startDate,
+            expression: "startDate"
+          }
+        ],
+        attrs: { type: "date", id: "start_date", name: "start_date" },
+        domProps: { value: _vm.startDate },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.startDate = $event.target.value
+          }
+        }
       }),
       _vm._v(" "),
       _c("label", { attrs: { for: "end_date" } }, [_vm._v("To")]),
       _vm._v(" "),
       _c("input", {
-        attrs: { type: "date", id: "end_date", name: "end_date" }
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.endDate,
+            expression: "endDate"
+          }
+        ],
+        attrs: { type: "date", id: "end_date", name: "end_date" },
+        domProps: { value: _vm.endDate },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.endDate = $event.target.value
+          }
+        }
       }),
       _vm._v(" "),
       _c("br"),
       _vm._v(" "),
-      _vm._l(_vm.weekdays, function(day) {
+      _vm._l(_vm.weekdays, function(calendarValue, day) {
         return _c("ul", { attrs: { id: "weekdays" } }, [
           _c("li", [
             _c("label", { attrs: { for: day + "_checkbox" } }, [
@@ -50859,8 +50948,47 @@ var render = function() {
             _c("br"),
             _vm._v(" "),
             _c("input", {
-              attrs: { type: "checkbox", id: day + "_checkbox", name: day },
-              domProps: { value: day }
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.checkedDays,
+                  expression: "checkedDays"
+                }
+              ],
+              attrs: {
+                type: "checkbox",
+                id: day + "_checkbox",
+                name: day,
+                checked: "true"
+              },
+              domProps: {
+                value: calendarValue,
+                checked: Array.isArray(_vm.checkedDays)
+                  ? _vm._i(_vm.checkedDays, calendarValue) > -1
+                  : _vm.checkedDays
+              },
+              on: {
+                change: function($event) {
+                  var $$a = _vm.checkedDays,
+                    $$el = $event.target,
+                    $$c = $$el.checked ? true : false
+                  if (Array.isArray($$a)) {
+                    var $$v = calendarValue,
+                      $$i = _vm._i($$a, $$v)
+                    if ($$el.checked) {
+                      $$i < 0 && (_vm.checkedDays = $$a.concat([$$v]))
+                    } else {
+                      $$i > -1 &&
+                        (_vm.checkedDays = $$a
+                          .slice(0, $$i)
+                          .concat($$a.slice($$i + 1)))
+                    }
+                  } else {
+                    _vm.checkedDays = $$c
+                  }
+                }
+              }
             })
           ])
         ])
@@ -50872,7 +51000,8 @@ var render = function() {
         "button",
         {
           staticClass: "btn btn-outline-primary",
-          attrs: { id: "save_events" }
+          attrs: { id: "save_events" },
+          on: { click: _vm.saveEvent }
         },
         [_vm._v("Save")]
       )
@@ -63091,6 +63220,41 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./resources/js sync recursive \\.vue$/":
+/*!***********************************!*\
+  !*** ./resources/js sync \.vue$/ ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./components/CalendarComponent.vue": "./resources/js/components/CalendarComponent.vue",
+	"./components/ManualEventComponent.vue": "./resources/js/components/ManualEventComponent.vue",
+	"./components/NavBarComponent.vue": "./resources/js/components/NavBarComponent.vue"
+};
+
+
+function webpackContext(req) {
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
+}
+function webpackContextResolve(req) {
+	if(!__webpack_require__.o(map, req)) {
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return map[req];
+}
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = "./resources/js sync recursive \\.vue$/";
+
+/***/ }),
+
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -63113,12 +63277,19 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
  *
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('navbar-component', __webpack_require__(/*! ./components/NavBarComponent.vue */ "./resources/js/components/NavBarComponent.vue")["default"]);
-Vue.component('calendar-component', __webpack_require__(/*! ./components/CalendarComponent */ "./resources/js/components/CalendarComponent.vue")["default"]);
-Vue.component('manual-event-component', __webpack_require__(/*! ./components/ManualEventComponent */ "./resources/js/components/ManualEventComponent.vue")["default"]);
+var files = __webpack_require__("./resources/js sync recursive \\.vue$/");
+
+files.keys().map(function (key) {
+  return Vue.component(key.split('/').pop().split('.')[0], files(key)["default"]);
+});
+/**
+ * Vue instance that will serve as centralized event dispatcher for our dashboard
+ */
+
+var dashboardEventHub = new Vue();
+Vue.prototype.$dashboardEventHub = dashboardEventHub; // attach dashboardEventHub instance to our vue global instance
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -63126,7 +63297,34 @@ Vue.component('manual-event-component', __webpack_require__(/*! ./components/Man
  */
 
 var app = new Vue({
-  el: '#app'
+  el: '#app',
+  data: {
+    calendarEvents: []
+  },
+  created: function created() {
+    dashboardEventHub.$on('refreshCalendar', this.getCalendarEvents);
+  },
+  mounted: function mounted() {
+    this.getCalendarEvents();
+  },
+  methods: {
+    getCalendarEvents: function getCalendarEvents() {
+      var _this = this;
+
+      axios.get('/api/events', {
+        params: {
+          'api_token': USER.api_token
+        }
+      }).then(function (response) {
+        if (response['data'] !== '' && response['data'] !== null) {
+          _this.calendarEvents = [response['data']];
+          console.log(response['data']);
+        } else {
+          console.log(response);
+        }
+      });
+    }
+  }
 });
 
 /***/ }),

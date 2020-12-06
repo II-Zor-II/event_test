@@ -42,6 +42,6 @@ class IndexController extends Controller
             return redirect('dashboard');
         }
 
-        return redirect('login')->with('error', 'Failed to Authenticate.');
+        return redirect('login')->with('error', 'Failed to WebAuthenticate.');
     }
 }

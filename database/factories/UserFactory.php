@@ -26,7 +26,8 @@ class UserFactory extends Factory
         $username = $this->faker->firstName;
         return [
             'username' => $username,
-            'password' => Hash::make($username)
+            'password' => Hash::make($username),
+            'api_token' =>  Str::random(60), // unhashed api_token
         ];
     }
 }
