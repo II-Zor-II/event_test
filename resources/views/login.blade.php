@@ -9,6 +9,8 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="/css/app.css">
+
     <!-- Styles -->
     <style>
         /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
@@ -394,17 +396,35 @@
     </style>
 </head>
 <body class="antialiased">
-<h1>Login</h1>
-<form action="/login" method="post">
-@csrf <!-- {{ csrf_field() }} -->
-    <label for="username">Username:</label><br>
-    <input name="username" type="text" id="username" value="" placeholder="type username here...">
-    <br>
-    <input name="password" type="text" id="password" value="" placeholder="********">
-    <input type="submit" value="Submit">
+
+<div class="container-fluid d-flex justify-content-center">
+    <div class="mt-4 border border-primary rounded p-2">
+        <div class="dark:bg-gray-800 dark:text-white text-center">
+            <h1>Login</h1>
+        </div>
+        <form action="/login" method="post">
+        @csrf <!-- {{ csrf_field() }} -->
+            <div class="form-group text-center ">
+                <div class="p-2">
+                    <label for="username"><h3>Username:</h3></label><br>
+                    <input class="form-control" name="username" type="text" id="username" value=""
+                           placeholder="type username here...">
+                </div>
+                <div class="p-2">
+                    <label for="password"><h3>Password:</h3></label>
+                    <input class="form-control" name="password" type="text" id="password" value="" placeholder="********">
+                </div>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+</div>
+<div>
     @if(session('error')!==null)
-        <h1>{{session('error')}}</h1>
+        <div class="alert alert-danger">
+            <h1>{{session('error')}}</h1>
+        </div>
     @endif
-</form>
+</div>
 </body>
 </html>
