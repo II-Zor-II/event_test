@@ -11,10 +11,10 @@
 <div id="app" class="container-fluid">
     <nav-bar-component></nav-bar-component>
     <div class="row">
-        <div class="col col-md-3">
+        <div class="col col-md-4 mt-5">
             <manual-event-component></manual-event-component>
         </div>
-        <div class="col col-md-9">
+        <div class="col col-md-8 p-2">
             <calendar-component
                 :events="calendarEvents">
             </calendar-component>
