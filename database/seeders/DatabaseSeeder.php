@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Client;
+use App\Models\Employee;
+use App\Models\Project;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,15 +17,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User::factory(5)->create();
+//        \App\Models\User::factory(5)->create();
 
         //default user for testing
-        DB::table('users')->insert([
-            'username' => 'admin',
-            'password' => Hash::make('admin'),
-            'api_token' =>  Str::random(60),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now()
-        ]);
+//        DB::table('users')->insert([
+//            'username' => 'admin',
+//            'password' => Hash::make('admin'),
+//            'api_token' =>  Str::random(60),
+//            'created_at' => Carbon::now(),
+//            'updated_at' => Carbon::now()
+//        ]);
+
+        $emp = Employee::factory(10)
+            ->has(Project::factory()->count(1))
+            ->create();
+        $client = Client::factory(10)->create();
+
     }
 }

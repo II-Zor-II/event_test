@@ -23,11 +23,11 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        $username = $this->faker->firstName;
-        return [
-            'username' => $username,
-            'password' => Hash::make($username),
-            'api_token' =>  Str::random(60), // unhashed api_token
-        ];
+//        $username = $this->faker->firstName;
+//        return [
+//            'username' => $username,
+//            'password' => Hash::make($username),
+//            'api_token' =>  Str::random(60), // unhashed api_token
+//        ];
     }
 }
