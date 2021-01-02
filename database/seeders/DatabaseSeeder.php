@@ -31,7 +31,14 @@ class DatabaseSeeder extends Seeder
         $emp = Employee::factory(10)
             ->has(Project::factory()->count(1))
             ->create();
-        $client = Client::factory(10)->create();
 
+        $client = Client::factory(10)
+            ->create();
+
+        $emp = Employee::factory(10)
+            ->create();
+
+        $projectWithoutForeignIds = Project::factory(5)
+            ->create(['employee_id' => null, 'client_id' => null]);
     }
 }
