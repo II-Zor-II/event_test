@@ -1,0 +1,20 @@
+
+How to map many to many relationship using joins?
+ - use multiple join query
+
+Natural Join
+- remove redundant columns/data when joining tables
+
+Self Join
+- used for heirarchical data inside a single table
+ ex:
+ * category_id & subcategory_id
+ * employee_id & supervisor_id
+
+Cross Join
+- used for one to many relationships. every row "FROM" a table is multiplied to the number of rows with
+another table.
+ ex:
+ * meals table + drinks table
+ *  t-shirts table + color table
+
